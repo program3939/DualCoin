@@ -3,28 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dual-Coin</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Schachzüge Visualisierung</title>
+    <style>
+        body {
+            background-color: #f2e4d4;
+            font-family: 'Garamond', serif;
+            color: #3b1d0f;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: #593d2b;
+        }
+
+        .container {
+            width: 80%;
+            margin: 0 auto;
+        }
+
+        .input-area {
+            margin-bottom: 20px;
+        }
+
+        input {
+            font-size: 1.2rem;
+            padding: 5px;
+            width: 200px;
+            border: 2px solid #593d2b;
+            border-radius: 5px;
+        }
+
+        button {
+            font-size: 1.2rem;
+            padding: 6px 12px;
+            background-color: #593d2b;
+            color: #f2e4d4;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-left: 10px;
+        }
+
+        button:hover {
+            background-color: #3b1d0f;
+        }
+
+        #board {
+            margin: 20px auto;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <h1>Dual-Coin</h1>
-        <section id="login">
-            <h2>Mitarbeiterzugang</h2>
-            <input type="email" id="adminEmail" placeholder="E-Mail">
-            <input type="password" id="adminPassword" placeholder="Passwort">
-            <button onclick="login()">Einloggen</button>
-            <div id="loginMessage" class="error"></div>
-        </section>
-        <section id="adminPanel" style="display: none;">
-            <h2>Admin-Panel</h2>
-            <button onclick="logout()">Ausloggen</button>
-        </section>
+        <h1>Majestätische Schachzüge</h1>
+        <div class="input-area">
+            <label for="move-input">Gib deinen Schachzug ein (z.B. e4):</label>
+            <input type="text" id="move-input" placeholder="z.B. e4">
+            <button id="move-btn">Zug anzeigen</button>
+        </div>
+        <div id="board" class="chessboard"></div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js"></script>
-    <script src="script.js"></script>
+    <!-- Einbindung von Chess.js und Chessboard.js für das Schachbrett -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.2/chess.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+    
+    <script>
+        // Initialisiere das Schachspiel
+        var board = null;
+        var game = new Chess();
+
+        // Schachbrett-Layout Optionen
+        var boardConfig = {
+            draggable: true,
+            position: 'start',
+            pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png', // Retro-Stil
+            onDrop: handleMove
+        };
+
+        board = Chessboard('board', boardConfig);
+
+        // Zug anhand des Textfeldes anzeigen
+        document.getElementById('move-btn').addEventListener('click', function() {
+            var move = document.getElementById('move-input').value;
+            if (game.move(move)) {
+                board.position(game.fen()); // Position auf dem Brett aktualisieren
+            } else {
+                alert("Ungültiger Zug! Versuche es erneut.");
+            }
+        });
+
+        // Funktion zur Handhabung von Zügen (bei Drag & Drop)
+        function handleMove(source, target) {
+            var move = game.move({
+                from: source,
+                to: target,
+                promotion: 'q' // Immer zu Dame befördern
+            });
+
+            // Ungültiger Zug
+            if (move === null) return 'snapback';
+
+            board.position(game.fen());
+        }
+    </script>
 </body>
 </html>
