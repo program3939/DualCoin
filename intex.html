@@ -54,16 +54,38 @@
         #board {
             margin: 20px auto;
         }
+
+        #color-selection {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            padding: 6px;
+            border: 2px solid #593d2b;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Majestätische Schachzüge</h1>
+        
+        <!-- Bereich zur Auswahl der Farbe -->
         <div class="input-area">
+            <label for="color-select">Wähle deine Farbe:</label>
+            <select id="color-select" class="color-selection">
+                <option value="white">Weiß</option>
+                <option value="black">Schwarz</option>
+            </select>
+            <button id="start-btn">Spiel starten</button>
+        </div>
+
+        <!-- Bereich zur Eingabe der Schachzüge -->
+        <div class="input-area" style="display: none;" id="move-section">
             <label for="move-input">Gib deinen Schachzug ein (z.B. e4):</label>
             <input type="text" id="move-input" placeholder="z.B. e4">
             <button id="move-btn">Zug anzeigen</button>
         </div>
+        
+        <!-- Schachbrett -->
         <div id="board" class="chessboard"></div>
     </div>
 
@@ -72,19 +94,28 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
     
     <script>
-        // Initialisiere das Schachspiel
         var board = null;
         var game = new Chess();
+        var color = 'white'; // Standardfarbe
 
         // Schachbrett-Layout Optionen
         var boardConfig = {
             draggable: true,
             position: 'start',
             pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png', // Retro-Stil
+            orientation: 'white',
             onDrop: handleMove
         };
 
-        board = Chessboard('board', boardConfig);
+        // Spiel starten basierend auf der gewählten Farbe
+        document.getElementById('start-btn').addEventListener('click', function() {
+            color = document.getElementById('color-select').value;
+            boardConfig.orientation = color; // Brett entsprechend der Farbe drehen
+            board = Chessboard('board', boardConfig);
+
+            // Zeige das Schachzug-Eingabefeld an
+            document.getElementById('move-section').style.display = 'block';
+        });
 
         // Zug anhand des Textfeldes anzeigen
         document.getElementById('move-btn').addEventListener('click', function() {
